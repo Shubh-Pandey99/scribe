@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scribe</title>
+  <link rel="stylesheet" href="sidepanel.css">
+  <link rel="stylesheet" href="highlight.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="lucide.min.js"></script>
+  <script src="marked.min.js"></script>
+  <script src="highlight.min.js"></script>
+</head>
+
+<body>
+  <div class="app-container" id="app">
+
+    <!-- Header -->
+    <header class="saas-header">
+      <div class="header-left">
+        <div class="logo-dot"></div>
+        <h2 id="header-title">Scribe</h2>
+      </div>
+
+      <!-- Mode Toggle -->
+      <div class="mode-toggle">
+        <button id="toggle-transcript" class="toggle-item active" title="Live Transcription">
+          <i data-lucide="mic"></i>
+          <span>Transcript</span>
+        </button>
+        <button id="toggle-capture" class="toggle-item" title="Screen Capture">
+          <i data-lucide="camera"></i>
+          <span>Capture</span>
+        </button>
+      </div>
+
+      <div class="header-actions">
+        <button class="ghost-btn" id="stealth-btn" title="Stealth Mode"><i data-lucide="eye"></i></button>
+        <button class="ghost-btn" id="dashboard-btn" title="Meeting History"><i data-lucide="history"></i></button>
+        <button class="ghost-btn" id="settings-btn" title="Settings"><i data-lucide="settings"></i></button>
+      </div>
+    </header>
+
+    <div id="error-display" class="error-banner hidden"></div>
+
+    <!-- Settings Modal (slides in from bottom) -->
+    <div id="settings-overlay" class="settings-overlay hidden">
+      <div class="settings-modal">
+        <div class="settings-header">
+          <span>Settings</span>
+          <button class="ghost-btn" id="settings-close-btn"><i data-lucide="x"></i></button>
+        </div>
+        <div class="settings-body">
+          <div class="field">
+            <label>AI Model</label>
+            <select id="model-select">
+              <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash</option>
+              <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+              <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>API URL</label>
+            <input type="text" id="vercel-url-input" placeholder="https://your-app.vercel.app">
+          </div>
+          <div class="field">
+            <label>API Key</label>
+            <input type="password" id="api-key-input" placeholder="Your SCRIBE_API_KEY">
+          </div>
+          <button id="save-settings" class="save-btn">
+            <i data-lucide="check"></i> Save Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <main class="content-area">
+      <article class="context-card">
+        <div class="workspace-scroller">
+
+          <!-- Transcript Section -->
+          <section id="recording-view" class="view-content">
+            <div class="view-header">
+              <div class="header-status">
+                <div class="card-meta">
+                  <span class="meta-icon"><i data-lucide="mic-2"></i></span>
+                  Live Transcription
+                </div>
+                <div id="audio-monitor" class="audio-meter">
+                  <div id="meter-fill" class="meter-bar"></div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <button id="pause-record-btn" class="record-action-btn hidden" title="Pause Recording">
+                  <i data-lucide="pause"></i>
+                </button>
+                <button id="mic-record-btn" class="record-action-btn">
+                  <div class="pulse-dot"></div>
+                  <span id="mic-record-btn-text">Record Mic</span>
+                </button>
+                <button id="main-record-btn" class="record-action-btn">
+                  <div class="pulse-dot"></div>
+                  <span id="record-btn-text">Record Tab</span>
+                </button>
+              </div>
+            </div>
+
+            <div id="live-transcript" class="transcript-box" contenteditable="true"
+              placeholder="Audio text will appear here once you start recording..."></div>
+          </section>
+
+          <!-- Image Section -->
+          <section id="captured-view" class="view-content hidden">
+            <div class="view-header">
+              <div class="card-meta">
+                <span class="meta-icon"><i data-lucide="image"></i></span>
+                Screen Snapshots
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button id="add-snap-btn" class="retake-btn">
+                  <i data-lucide="plus"></i> Add Snap
+                </button>
+                <button id="clear-snaps-btn" class="retake-btn" style="color: #f85149;">
+                  <i data-lucide="trash-2"></i> Clear
+                </button>
+              </div>
+            </div>
+            <div id="image-gallery" class="image-gallery"></div>
+          </section>
+
+          <!-- AI Result Section -->
+          <section id="result-view" class="view-content hidden">
+            <div class="view-header">
+              <div class="card-meta">
+                <span class="meta-icon"><i data-lucide="sparkles"></i></span>
+                AI Insights
+              </div>
+              <button id="back-to-transcript-btn" class="back-btn">
+                <i data-lucide="arrow-left"></i> Back
+              </button>
+            </div>
+            <div id="ai-response-text" class="ai-text markdown-body"></div>
+          </section>
+
+          <!-- History Section -->
+          <section id="history-view" class="view-content hidden">
+            <div class="view-header">
+              <div class="card-meta">
+                <span class="meta-icon"><i data-lucide="history"></i></span>
+                Session History
+              </div>
+              <button id="hist-back-btn" class="back-btn">
+                <i data-lucide="arrow-left"></i> Back
+              </button>
+            </div>
+            <div id="hist-list" class="hist-list"></div>
+          </section>
+
+        </div>
+
+        <!-- Dynamic Primary Action Button -->
+        <footer class="card-footer" id="card-action-bar">
+          <button id="process-content-btn" class="process-btn">
+            <i data-lucide="sparkles"></i> <span>Summarize Transcription</span>
+          </button>
+        </footer>
+      </article>
+    </main>
+
+    <!-- Bottom Command Bar -->
+    <footer class="saas-footer">
+      <div class="ask-container">
+        <i data-lucide="message-circle" class="ask-icon"></i>
+        <input type="text" id="ask-input" placeholder="Ask anything about this meeting..." autocomplete="off">
+        <button id="send-btn" class="icon-send-btn"><i data-lucide="arrow-up"></i></button>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+
+</html>

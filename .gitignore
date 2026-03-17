@@ -1,0 +1,77 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+pip-wheel-metadata/
+*.log
+*.pot
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+
+# =========================
+# Node / JS
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# =========================
+# Chrome Extension Build
+# =========================
+*.crx
+*.pem
+*.zip
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+.history/
+
+# =========================
+# System Files
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+*.env
+.vercel
+
+# Local generated folders
+.emergent/
+.idx/
+
+# Git config file accidentally committed
+.gitconfig
+
+# Next.js build output
+.next/
+out/
+next-env.d.ts
+
+# Test environments
+testenv/
+testenv3/
+testenv*/
