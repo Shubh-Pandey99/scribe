@@ -2,10 +2,18 @@
 
 > AI-powered live transcription, screen capture analysis, and real-time Q&A — right in your browser sidepanel.
 
-## What it does
+<div align="center">
 
-- **GitHub**: [github.com/Shubh-Pandey99/scribe](https://github.com/Shubh-Pandey99/scribe)
-- **Vercel**: [scribe-extension.vercel.app](https://scribe-extension.vercel.app)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+
+👉 **Live API Endpoint:** [usescribe.vercel.app/api](https://usescribe.vercel.app/api)
+
+</div>
+
+## What it does
 
 - 🎙️ **Live Transcription** — Captures audio from any browser tab or **microphone** and transcribes it in real-time using Groq Whisper, OpenAI Whisper, or Google Gemini.
 - 📷 **Screen Capture & Native Paste** — Takes a screenshot of the active tab (or paste an image directly) and sends it to Gemini for visual analysis.
