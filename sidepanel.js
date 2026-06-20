@@ -297,11 +297,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.lucide) lucide.createIcons();
       }
 
+      const statusText = document.getElementById('status-text');
+      if (statusText) statusText.textContent = 'Recording';
+
       if (mode === "mic") {
-        micRecordBtnText.textContent = "Stop Mic";
+        micRecordBtnText.textContent = "Stop";
         recordBtn.style.display = "none";
       } else {
-        recordBtnText.textContent = "Stop Tab";
+        recordBtnText.textContent = "Stop";
         micRecordBtn.style.display = "none";
       }
 
@@ -461,11 +464,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     isRecording = false;
     appContainer.classList.remove('recording');
-    recordBtnText.textContent = "Record Tab";
-    micRecordBtnText.textContent = "Record Mic";
+    recordBtnText.textContent = "Tab";
+    micRecordBtnText.textContent = "Mic";
     recordBtn.style.display = "";
     micRecordBtn.style.display = "";
     if (meterFill) meterFill.style.width = '0%';
+    const statusText = document.getElementById('status-text');
+    if (statusText) statusText.textContent = 'Idle';
     logStatus("Recording stopped.");
     saveSession();
   }
@@ -704,13 +709,16 @@ document.addEventListener('DOMContentLoaded', () => {
   if (pauseRecordBtn) {
     pauseRecordBtn.onclick = () => {
       isPaused = !isPaused;
+      const statusText = document.getElementById('status-text');
       if (isPaused) {
         pauseRecordBtn.innerHTML = '<i data-lucide="play"></i>';
-        pauseRecordBtn.style.color = '#f85149';
+        pauseRecordBtn.style.color = 'var(--danger)';
+        if (statusText) statusText.textContent = 'Paused';
         logStatus("Recording paused.");
       } else {
         pauseRecordBtn.innerHTML = '<i data-lucide="pause"></i>';
         pauseRecordBtn.style.color = '';
+        if (statusText) statusText.textContent = 'Recording';
         logStatus("Recording resumed.");
       }
       if (window.lucide) lucide.createIcons();

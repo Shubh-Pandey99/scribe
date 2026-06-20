@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scribe</title>
+  <title>Scribe — AI Interview Assistant</title>
   <link rel="stylesheet" href="sidepanel.css">
   <link rel="stylesheet" href="highlight.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="lucide.min.js"></script>
   <script src="marked.min.js"></script>
   <script src="highlight.min.js"></script>
@@ -16,10 +16,16 @@
 <body>
   <div class="app-container" id="app">
 
-    <!-- Header -->
+    <!-- ── Header ─────────────────────────────────── -->
     <header class="saas-header">
       <div class="header-left">
-        <div class="logo-dot"></div>
+        <!-- Gradient logo mark -->
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
+          </svg>
+        </div>
         <h2 id="header-title">Scribe</h2>
       </div>
 
@@ -44,11 +50,14 @@
 
     <div id="error-display" class="error-banner hidden"></div>
 
-    <!-- Settings Modal (slides in from bottom) -->
+    <!-- ── Settings Modal (centered frosted glass) ── -->
     <div id="settings-overlay" class="settings-overlay hidden">
       <div class="settings-modal">
         <div class="settings-header">
-          <span>Settings</span>
+          <div class="settings-title">
+            <div class="settings-title-icon"><i data-lucide="settings-2"></i></div>
+            Settings
+          </div>
           <button class="ghost-btn" id="settings-close-btn"><i data-lucide="x"></i></button>
         </div>
         <div class="settings-body">
@@ -79,7 +88,7 @@
       <article class="context-card">
         <div class="workspace-scroller">
 
-          <!-- Transcript Section -->
+          <!-- ── Transcript Section ──────────────────── -->
           <section id="recording-view" class="view-content">
             <div class="view-header">
               <div class="header-status">
@@ -87,41 +96,59 @@
                   <span class="meta-icon"><i data-lucide="mic-2"></i></span>
                   Live Transcription
                 </div>
-                <div id="audio-monitor" class="audio-meter">
-                  <div id="meter-fill" class="meter-bar"></div>
+                <div id="recording-status" class="status-badge">
+                  <div class="badge-dot"></div>
+                  <span id="status-text">Idle</span>
                 </div>
               </div>
-              <div style="display: flex; gap: 8px; align-items: center;">
-                <button id="pause-record-btn" class="record-action-btn hidden" title="Pause Recording">
+
+              <!-- Controls: pause + waveform + record buttons -->
+              <div class="record-controls">
+                <button id="pause-record-btn" class="pause-btn hidden" title="Pause Recording">
                   <i data-lucide="pause"></i>
                 </button>
+
+                <!-- Animated waveform (replaces pulse dot) -->
+                <div class="waveform" id="waveform-vis">
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                </div>
+
                 <button id="mic-record-btn" class="record-action-btn">
                   <div class="pulse-dot"></div>
-                  <span id="mic-record-btn-text">Record Mic</span>
+                  <span id="mic-record-btn-text">Mic</span>
                 </button>
                 <button id="main-record-btn" class="record-action-btn">
                   <div class="pulse-dot"></div>
-                  <span id="record-btn-text">Record Tab</span>
+                  <span id="record-btn-text">Tab</span>
                 </button>
               </div>
+            </div>
+
+            <!-- Audio meter (hidden but functional for JS) -->
+            <div id="audio-monitor" class="audio-meter" style="margin-bottom: 10px;">
+              <div id="meter-fill" class="meter-bar"></div>
             </div>
 
             <div id="live-transcript" class="transcript-box" contenteditable="true"
               placeholder="Audio text will appear here once you start recording..."></div>
           </section>
 
-          <!-- Image Section -->
+          <!-- ── Capture Section ────────────────────── -->
           <section id="captured-view" class="view-content hidden">
             <div class="view-header">
               <div class="card-meta">
                 <span class="meta-icon"><i data-lucide="image"></i></span>
                 Screen Snapshots
               </div>
-              <div style="display: flex; gap: 8px;">
+              <div style="display: flex; gap: 6px;">
                 <button id="add-snap-btn" class="retake-btn">
                   <i data-lucide="plus"></i> Add Snap
                 </button>
-                <button id="clear-snaps-btn" class="retake-btn" style="color: #f85149;">
+                <button id="clear-snaps-btn" class="retake-btn" style="color: var(--danger); border-color: rgba(255,91,106,0.3);">
                   <i data-lucide="trash-2"></i> Clear
                 </button>
               </div>
@@ -129,7 +156,7 @@
             <div id="image-gallery" class="image-gallery"></div>
           </section>
 
-          <!-- AI Result Section -->
+          <!-- ── AI Result Section ──────────────────── -->
           <section id="result-view" class="view-content hidden">
             <div class="view-header">
               <div class="card-meta">
@@ -143,7 +170,7 @@
             <div id="ai-response-text" class="ai-text markdown-body"></div>
           </section>
 
-          <!-- History Section -->
+          <!-- ── History Section ────────────────────── -->
           <section id="history-view" class="view-content hidden">
             <div class="view-header">
               <div class="card-meta">
@@ -159,7 +186,7 @@
 
         </div>
 
-        <!-- Dynamic Primary Action Button -->
+        <!-- ── Primary Action Button ──────────────── -->
         <footer class="card-footer" id="card-action-bar">
           <button id="process-content-btn" class="process-btn">
             <i data-lucide="sparkles"></i> <span>Summarize Transcription</span>
@@ -168,7 +195,7 @@
       </article>
     </main>
 
-    <!-- Bottom Command Bar -->
+    <!-- ── Command Bar ─────────────────────────────── -->
     <footer class="saas-footer">
       <div class="ask-container">
         <i data-lucide="message-circle" class="ask-icon"></i>
@@ -180,6 +207,85 @@
   </div>
 
   <script src="sidepanel.js"></script>
+
+  <!-- Patch: wire new status badge & waveform to recording state -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const statusText = document.getElementById('status-text');
+      const recordingStatus = document.getElementById('recording-status');
+
+      // Observe class changes on #app to sync status badge text
+      const app = document.getElementById('app');
+      const observer = new MutationObserver(() => {
+        if (app.classList.contains('recording')) {
+          statusText.textContent = 'Recording';
+        } else {
+          statusText.textContent = 'Idle';
+        }
+      });
+      observer.observe(app, { attributes: true, attributeFilter: ['class'] });
+
+      // Replace inline "Thinking..." with skeleton loader
+      const aiText = document.getElementById('ai-response-text');
+      const origRunAIAction = window.runAIAction;
+
+      // Patch the AI result section to show skeleton on load
+      const resultSection = document.getElementById('result-view');
+      const skeletonHTML = `
+        <div class="ai-skeleton">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+        </div>`;
+
+      // Intercept innerHTML sets for "Thinking..."
+      const originalDescriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+      Object.defineProperty(aiText, 'innerHTML', {
+        set(value) {
+          if (value && value.includes('thinking-text')) {
+            originalDescriptor.set.call(this, skeletonHTML);
+          } else {
+            originalDescriptor.set.call(this, value);
+          }
+        },
+        get() {
+          return originalDescriptor.get.call(this);
+        }
+      });
+
+      // Also patch hist-list loading text
+      const histList = document.getElementById('hist-list');
+      const histLoadHTML = `
+        <div class="hist-loading">
+          Loading sessions...
+          <div class="hist-loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>`;
+
+      Object.defineProperty(histList, 'innerHTML', {
+        set(value) {
+          if (value && value.includes('hist-loading') && value.includes('Cloud History')) {
+            originalDescriptor.set.call(this, histLoadHTML);
+          } else if (value && value.includes('hist-empty') && value.includes('No sessions yet')) {
+            originalDescriptor.set.call(this, `
+              <div class="hist-empty">
+                <div class="hist-empty-icon"><i data-lucide="inbox"></i></div>
+                No sessions yet.<br>Start recording to create your first one.
+              </div>`);
+            if (window.lucide) lucide.createIcons();
+          } else {
+            originalDescriptor.set.call(this, value);
+          }
+        },
+        get() {
+          return originalDescriptor.get.call(this);
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>
