@@ -9,7 +9,7 @@
 
 **AI-powered live transcription, screen capture analysis, and real-time Q&A — right in your browser sidepanel.**
 
-👉 **Live Extension Landing:** [scribe-extension.vercel.app](https://scribe-extension.vercel.app)
+👉 **Live Extension Landing:** [View Project](https://scribe-extension.vercel.app)
 
 </div>
 
