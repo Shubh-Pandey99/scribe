@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const pauseRecordBtn = document.getElementById('pause-record-btn');
   const settingsOverlay = document.getElementById('settings-overlay');
   const settingsCloseBtn = document.getElementById('settings-close-btn');
-  const retakeBtn = document.getElementById('retake-btn');
 
   // ====== STATE ======
   let isRecording = false;
@@ -767,8 +766,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (res.vercelUrl) urlInput.value = res.vercelUrl;
     if (res.apiKey) apiKeyInput.value = res.apiKey;
   });
-
-  if (retakeBtn) retakeBtn.onclick = () => captureScreen();
 
   chrome.runtime.onMessage.addListener((msg) => {
     if (msg.type === 'error') { showError(msg.message); logStatus('Error: ' + msg.message); }

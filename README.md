@@ -5,58 +5,74 @@
 <div align="center">
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=google&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
-👉 **Live API Endpoint:** [usescribe.vercel.app/api](https://usescribe.vercel.app/api)
+👉 **Live:** [scribe-extension.vercel.app](https://scribe-extension.vercel.app)
 
 </div>
 
 ## What it does
 
-- 🎙️ **Live Transcription** — Captures audio from any browser tab or **microphone** and transcribes it in real-time using Groq Whisper, OpenAI Whisper, or Google Gemini.
-- 📷 **Screen Capture & Native Paste** — Takes a screenshot of the active tab (or paste an image directly) and sends it to Gemini for visual analysis.
-- 🤖 **AI Q&A** — Ask anything about the transcript or capture using Gemini 2.0 Flash.
-- ✨ **Summarize** — One-click meeting/video summaries in bullet points.
-- 🕐 **Session History** — Every recording is saved locally and synced remotely.
-- 👁️ **Stealth Mode** — Toggle stealth mode to blur UI elements in high-pressure environments.
+- 🎙️ **Live Transcription** — Captures audio from any browser tab or microphone and transcribes it in real-time using Groq Whisper, OpenAI Whisper, or Google Gemini.
+- 📷 **Screen Capture & Paste** — Takes a screenshot of the active tab (or paste an image directly) and sends it to Gemini for visual analysis.
+- 🤖 **AI Q&A** — Ask anything about the transcript or captures via the command bar.
+- ✨ **Summarize** — One-click summaries in bullet points.
+- 🕐 **Session History** — Every session saved locally and synced to the cloud.
+- 👁️ **Stealth Mode** — Blurs the panel in high-pressure environments. Hover to reveal.
 
 ## Architecture
 
 ```
-Chrome Extension (MV3)          Vercel Backend
-─────────────────────           ──────────────
-sidepanel.html/js/css    ──►   /api/transcribe  (Groq → Whisper → Gemini STT)
-background-enhanced.js   ──►   /api/answer      (Gemini text/vision)
-manifest.json            ──►   /api/sessions    (PostgreSQL persistence)
+Chrome Extension (MV3)          Vercel Backend (Flask)
+─────────────────────           ──────────────────────
+sidepanel.html/js/css    ──►   /api/transcribe   (Groq → Whisper → Gemini STT)
+background-enhanced.js   ──►   /api/answer       (Gemini text + vision)
+content-script.js        ──►   /api/sessions     (PostgreSQL persistence)
+manifest.json
 ```
 
 ## Setup
 
-### Extension
+### 1. Extension
 1. Clone this repo.
-2. Go to `chrome://extensions/` → Enable Developer Mode → Load Unpacked → select this folder.
-3. Open any tab, click the Extensions puzzle icon → **Scribe** → Open sidepanel.
+2. Go to `chrome://extensions/` → Enable **Developer Mode** → **Load Unpacked** → select this folder.
+3. Open any tab → click the Extensions puzzle icon → **Scribe** → Open sidepanel.
 
-### Backend (Vercel)
-1. Deploy the `api` directory to Vercel: `vercel deploy`
-2. Set environment variables in Vercel dashboard:
-   - `GROQ_API_KEY` — for lightning-fast Whisper STT (Primary)
-   - `OPENAI_API_KEY` — for Whisper STT (Fallback)
-   - `GOOGLE_API_KEY` — for Gemini Multimodal STT + AI responses
-   - `POSTGRES_URL` — for session cloud sync using PostgreSQL (optional)
+### 2. Backend (Vercel)
+Deploy the `api/` directory to Vercel:
+```bash
+vercel deploy
+```
+Set these environment variables in the Vercel dashboard:
 
-### Using Live Transcription
-1. Open a YouTube video, a meeting, or simply use your microphone.
-2. Click **Record Tab** or **Record Mic** in the sidepanel.
-3. If recording a tab, Chrome will show a screen/tab share picker — select your tab and **check "Share tab audio"**.
-4. Transcription appears live as audio is processed in fast audio chunks.
+| Variable | Purpose |
+|---|---|
+| `GROQ_API_KEY` | Lightning-fast Whisper STT (primary) |
+| `OPENAI_API_KEY` | Whisper STT (fallback) |
+| `GOOGLE_API_KEY` | Gemini multimodal AI + STT fallback |
+| `SCRIBE_API_KEY` | API authentication key |
+| `POSTGRES_URL` | Session cloud sync (optional) |
+
+### 3. Connect
+In the Scribe sidepanel → Settings (⚙️):
+- **API URL**: your Vercel deployment URL
+- **API Key**: your `SCRIBE_API_KEY` value
+
+## Usage
+
+1. Open any tab with audio (YouTube, Zoom, Google Meet, etc.)
+2. Click **Tab** to record tab audio, or **Mic** to record microphone.
+3. The live transcript appears as audio is processed.
+4. Hit **Summarize** for bullet-point notes, or type a question in the command bar.
+5. Use **Capture** to screenshot the current tab and get visual AI analysis.
 
 ## Tech Stack
 
-- **Extension**: Vanilla JS, MV3, `getDisplayMedia` & microphone capture, Context-aware prompting
+- **Extension**: Vanilla JS, Chrome MV3, Web Audio API, `getDisplayMedia` + microphone capture
 - **Backend**: Python Flask on Vercel
-- **STT**: Groq Whisper (`whisper-large-v3-turbo`) with OpenAI and Gemini multimodal fallbacks
-- **AI**: Google Gemini (2.0 Flash, 1.5 Flash fallbacks)
+- **STT**: Groq Whisper (`whisper-large-v3-turbo`) → OpenAI Whisper → Gemini multimodal (fallback chain)
+- **AI**: Google Gemini 2.5 Flash (default), 2.5 Pro, 2.0 Flash
 - **Storage**: `chrome.storage.local` + PostgreSQL (`pg8000`)
+- **UI**: Deep space glassmorphism, Inter + JetBrains Mono, CSS animations
