@@ -249,183 +249,211 @@ def root():
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scribe — Your AI Meeting Companion</title>
+<title>Scribe — AI Interview &amp; Meeting Assistant</title>
+<meta name="description" content="Scribe listens to any conversation, captures every word in real-time, and turns it into summaries and answers — stealth-mode AI for interviews and meetings.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
 :root{
-  --bg:#07070a;
-  --bg1:#0d0d12;
-  --bg2:#13131a;
-  --bg3:#1c1c26;
-  --line:rgba(255,255,255,0.055);
-  --line2:rgba(255,255,255,0.09);
-  --line3:rgba(255,255,255,0.16);
-  --text:#eeeef5;
-  --text2:#8080a0;
-  --text3:#3d3d58;
-  --blue:#5b9fff;
-  --blue-d:rgba(91,159,255,0.10);
-  --blue-g:rgba(91,159,255,0.22);
-  --cyan:#00d9f5;
-  --green:#00e87a;
+  --bg:#07090f;
+  --bg1:#0a0d16;
+  --bg2:#0e1220;
+  --bg3:#131828;
+  --surface:rgba(255,255,255,0.04);
+  --surface-md:rgba(255,255,255,0.07);
+  --surface-hi:rgba(255,255,255,0.11);
+  --accent:#7c6bff;
+  --accent2:#a78bfa;
+  --accent3:#c4b5fd;
+  --accent-glow:rgba(124,107,255,0.28);
+  --accent-glow-sm:rgba(124,107,255,0.12);
+  --danger:#ff5b6a;
+  --success:#34d399;
+  --text:#eef0f8;
+  --text2:#9099b5;
+  --text3:#5a6280;
+  --text4:#3d4462;
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.13);
+  --border-accent:rgba(124,107,255,0.35);
   --r:10px;
   --r2:16px;
   --r3:22px;
+  --r4:28px;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
 }
 
 html{scroll-behavior:smooth}
 body{
   background:var(--bg);
   color:var(--text);
-  font-family:'Bricolage Grotesque',system-ui,sans-serif;
+  font-family:'Inter',system-ui,sans-serif;
   font-size:16px;line-height:1.6;
   overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
 }
 
-/* scanlines */
-body::after{
+/* ── Ambient background ── */
+body::before{
   content:'';position:fixed;inset:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.018) 2px,rgba(0,0,0,0.018) 4px);
-  pointer-events:none;z-index:9998;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%,rgba(124,107,255,0.12) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%,rgba(99,102,241,0.1) 0%,transparent 60%),
+    linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+  pointer-events:none;z-index:0;
 }
 
-/* global grid */
+/* dot grid */
 .g-grid{
   position:fixed;inset:0;z-index:0;
-  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
-  background-size:64px 64px;
-  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,black,transparent);
+  background-image:radial-gradient(circle,rgba(255,255,255,0.04) 1px,transparent 1px);
+  background-size:32px 32px;
+  mask-image:radial-gradient(ellipse 100% 80% at 50% 0%,black 0%,transparent 80%);
   pointer-events:none;
 }
 
-/* NAV */
+/* ── NAV ── */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 44px;height:58px;
-  background:rgba(7,7,10,0.82);
-  backdrop-filter:blur(28px);
-  border-bottom:1px solid var(--line);
+  padding:0 44px;height:60px;
+  background:rgba(7,9,15,0.82);
+  backdrop-filter:blur(28px) saturate(160%);
+  -webkit-backdrop-filter:blur(28px) saturate(160%);
+  border-bottom:1px solid var(--border);
 }
-.logo{
-  display:flex;align-items:center;gap:9px;
-  text-decoration:none;font-family:'DM Mono',monospace;
-  font-size:15px;font-weight:500;color:var(--text);letter-spacing:.3px;
+nav::after{
+  content:'';position:absolute;bottom:-1px;left:15%;right:15%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:0.4;
 }
-.logo-icon{
-  width:28px;height:28px;background:var(--blue-d);
-  border:1px solid rgba(91,159,255,0.25);border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-}
-.nav-mid{display:flex;gap:32px;list-style:none}
-.nav-mid a{color:var(--text2);text-decoration:none;font-size:14px;transition:color .2s}
-.nav-mid a:hover{color:var(--text)}
-.nav-pill{
-  display:flex;align-items:center;gap:1.5px;
-  background:rgba(0,232,122,0.07);
-  border:1px solid rgba(0,232,122,0.18);
-  padding:5px 12px;border-radius:100px;
-  font-family:'DM Mono',monospace;font-size:11px;
-  color:var(--green);letter-spacing:1.2px;
-}
-.nav-pill-dot{
-  width:5px;height:5px;border-radius:50%;
-  background:var(--green);margin-right:6px;
-  animation:pdot 2s ease-in-out infinite;
-}
-@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 
-/* HERO */
+.logo{
+  display:flex;align-items:center;gap:10px;
+  text-decoration:none;font-size:15px;font-weight:700;
+  color:var(--text);letter-spacing:-0.3px;
+}
+.logo-mark{
+  width:30px;height:30px;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);
+  border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 14px var(--accent-glow);
+  flex-shrink:0;position:relative;overflow:hidden;
+}
+.logo-mark::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.25) 0%,transparent 60%);
+}
+.logo-mark svg{width:15px;height:15px;color:white;position:relative;z-index:1}
+.logo-text{
+  background:linear-gradient(135deg,var(--text) 0%,var(--accent3) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+.nav-mid{display:flex;gap:32px;list-style:none}
+.nav-mid a{color:var(--text3);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+.nav-mid a:hover{color:var(--text)}
+
+.nav-badge{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(52,211,153,0.08);
+  border:1px solid rgba(52,211,153,0.22);
+  padding:6px 14px;border-radius:100px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--success);letter-spacing:1px;font-weight:500;
+}
+.nav-badge-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--success);
+  animation:pulseDot 2s ease-in-out infinite;
+}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+/* ── HERO ── */
 #hero{
   position:relative;z-index:1;
   min-height:100vh;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   text-align:center;
-  padding:110px 24px 80px;
+  padding:120px 24px 80px;
   overflow:hidden;
 }
 .hero-glow{
-  position:absolute;top:-100px;left:50%;
-  transform:translateX(-50%);
-  width:700px;height:500px;
-  background:radial-gradient(ellipse,rgba(91,159,255,0.09) 0%,transparent 65%);
+  position:absolute;top:-80px;left:50%;transform:translateX(-50%);
+  width:900px;height:600px;
+  background:radial-gradient(ellipse,rgba(124,107,255,0.12) 0%,transparent 65%);
   pointer-events:none;
-}
-.hero-line{
-  position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:1px;height:480px;
-  background:linear-gradient(to bottom,transparent,var(--blue),transparent);
-  opacity:.35;pointer-events:none;
 }
 
 .eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
-  font-family:'DM Mono',monospace;font-size:11px;
-  letter-spacing:2px;text-transform:uppercase;color:var(--blue);
-  margin-bottom:28px;
-  animation:fu .6s .05s ease both;
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);
+  margin-bottom:32px;
+  animation:fadeUp .6s .05s both;
 }
-.eyebrow-line{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--blue))}
-.eyebrow-line.r{background:linear-gradient(90deg,var(--blue),transparent)}
+.eyebrow-line{width:36px;height:1px;background:linear-gradient(90deg,transparent,var(--accent))}
+.eyebrow-line.r{background:linear-gradient(90deg,var(--accent),transparent)}
 
 h1{
-  font-size:clamp(52px,8vw,96px);
-  font-weight:700;line-height:1.0;
-  letter-spacing:-3px;color:var(--text);
-  max-width:880px;
-  animation:fu .7s .12s ease both;
+  font-size:clamp(48px,8vw,96px);
+  font-weight:800;line-height:1.0;
+  letter-spacing:-4px;color:var(--text);
+  max-width:900px;
+  animation:fadeUp .7s .12s both;
 }
 h1 .grad{
-  background:linear-gradient(100deg,var(--blue) 0%,var(--cyan) 60%);
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 50%,#818cf8 100%);
   -webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 
 .hero-sub{
-  font-size:19px;font-weight:300;color:var(--text2);
-  max-width:500px;margin:20px auto 0;line-height:1.75;
-  animation:fu .7s .22s ease both;
+  font-size:18px;font-weight:400;color:var(--text2);
+  max-width:520px;margin:24px auto 0;line-height:1.78;
+  animation:fadeUp .7s .22s both;
 }
 
 .cta-row{
   display:flex;gap:14px;align-items:center;
-  justify-content:center;margin-top:40px;
-  animation:fu .7s .32s ease both;
+  justify-content:center;margin-top:44px;
+  animation:fadeUp .7s .32s both;
+  flex-wrap:wrap;
 }
-.btn-p{
+.btn-primary{
   display:inline-flex;align-items:center;gap:8px;
-  background:var(--blue);color:#000;
-  font-size:15px;font-weight:600;
-  padding:13px 28px;border-radius:100px;
-  text-decoration:none;letter-spacing:.1px;
-  transition:transform .2s,box-shadow .2s;
+  background:linear-gradient(135deg,var(--accent) 0%,#6366f1 100%);
+  color:white;font-size:15px;font-weight:700;
+  padding:14px 30px;border-radius:100px;
+  text-decoration:none;letter-spacing:-.1px;
+  transition:transform .2s var(--ease),box-shadow .2s;
+  box-shadow:0 4px 20px var(--accent-glow);
 }
-.btn-p:hover{transform:translateY(-1px);box-shadow:0 0 36px var(--blue-g)}
-.btn-s{
-  display:inline-flex;align-items:center;gap:7px;
-  background:transparent;color:var(--text2);
-  font-size:15px;padding:13px 22px;border-radius:100px;
-  text-decoration:none;border:1px solid var(--line2);
-  transition:color .2s,border-color .2s;
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(124,107,255,0.45)}
+.btn-secondary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--surface);color:var(--text2);
+  font-size:15px;font-weight:500;padding:14px 24px;border-radius:100px;
+  text-decoration:none;border:1px solid var(--border2);
+  transition:color .2s,border-color .2s,background .2s;
 }
-.btn-s:hover{color:var(--text);border-color:var(--line3)}
+.btn-secondary:hover{color:var(--text);border-color:var(--border-accent);background:var(--surface-md)}
 
-/* THREE PILLARS */
+/* ── Pillars ── */
 .pillars{
   display:flex;gap:1px;
-  background:var(--line);
-  border:1px solid var(--line2);
-  border-radius:var(--r2);
-  overflow:hidden;
+  background:var(--border);
+  border:1px solid var(--border2);
+  border-radius:var(--r2);overflow:hidden;
   max-width:780px;width:100%;
-  margin:52px auto 0;
-  animation:fu .7s .42s ease both;
+  margin:56px auto 0;
+  animation:fadeUp .7s .42s both;
 }
 .pillar{
   flex:1;padding:22px 20px;
@@ -433,109 +461,109 @@ h1 .grad{
   transition:background .2s;
 }
 .pillar:hover{background:var(--bg2)}
-.pillar-icon{font-size:22px;margin-bottom:10px}
-.pillar-title{
-  font-size:15px;font-weight:600;color:var(--text);
-  margin-bottom:6px;letter-spacing:-.2px;
+.pillar-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,rgba(124,107,255,0.18) 0%,rgba(167,139,250,0.1) 100%);
+  border:1px solid rgba(124,107,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 12px;font-size:18px;
 }
-.pillar-desc{font-size:13px;color:var(--text2);font-weight:300;line-height:1.6}
+.pillar-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:-.2px}
+.pillar-desc{font-size:12px;color:var(--text3);line-height:1.6}
 
-/* MOCK WINDOW */
+/* ── Mock Window ── */
 .mock-wrap{
   position:relative;z-index:1;
-  width:100%;max-width:960px;
+  width:100%;max-width:920px;
   margin:64px auto 0;
-  animation:fu .7s .5s ease both;
+  animation:fadeUp .7s .5s both;
 }
 .mock{
-  background:var(--bg1);
-  border:1px solid var(--line2);
+  background:rgba(14,18,32,0.7);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border2);
   border-radius:var(--r3);overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.05) inset;
 }
 .mock-bar{
   display:flex;align-items:center;gap:7px;
-  padding:13px 18px;background:var(--bg2);
-  border-bottom:1px solid var(--line);
+  padding:13px 18px;
+  background:rgba(10,13,22,0.8);
+  border-bottom:1px solid var(--border);
 }
 .mdot{width:11px;height:11px;border-radius:50%}
 .mdot.r{background:#ff5f56}.mdot.y{background:#ffbd2e}.mdot.g{background:#27c93f}
 .mock-title{
-  margin:0 auto;font-family:'DM Mono',monospace;
-  font-size:11px;color:var(--text3);letter-spacing:.4px;
+  margin:0 auto;font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--text4);letter-spacing:.5px;
 }
-.mock-body{
-  display:grid;grid-template-columns:1fr 1px 1fr;
-  min-height:300px;
-}
+.mock-body{display:grid;grid-template-columns:1fr 1px 1fr;min-height:280px}
 .mock-pane{padding:24px 22px}
 .mock-label{
-  font-family:'DM Mono',monospace;font-size:10px;
-  letter-spacing:1.8px;text-transform:uppercase;
-  color:var(--text3);margin-bottom:14px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--text4);margin-bottom:14px;
   display:flex;align-items:center;gap:7px;
 }
 .mock-label-dot{
-  width:5px;height:5px;border-radius:50%;
-  background:var(--green);
-  animation:pdot 1.8s ease-in-out infinite;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--success);
+  animation:pulseDot 1.8s ease-in-out infinite;
 }
-.mock-div{background:var(--line);width:1px}
-.transcript-line{
-  font-size:13px;color:var(--text2);
-  line-height:1.85;margin-bottom:4px;
-}
+.mock-div{background:var(--border);width:1px}
+.transcript-line{font-size:13px;color:var(--text2);line-height:1.85;margin-bottom:5px}
 .transcript-line .who{
-  font-family:'DM Mono',monospace;font-size:10px;
-  letter-spacing:1px;color:var(--blue);
-  text-transform:uppercase;margin-right:7px;font-weight:500;
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:1px;color:var(--accent3);
+  text-transform:uppercase;margin-right:7px;font-weight:600;
 }
 .tcursor{
-  display:inline-block;width:6px;height:13px;
-  background:var(--blue);vertical-align:middle;margin-left:2px;
-  animation:blink 1s step-end infinite;
+  display:inline-block;width:2px;height:14px;
+  background:var(--accent);vertical-align:middle;margin-left:2px;
+  animation:blink 1s step-end infinite;border-radius:1px;
 }
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
 .summary-card{
-  background:var(--bg);border:1px solid var(--line2);
-  border-radius:var(--r);padding:14px 16px;margin-bottom:12px;
-  font-size:13px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px 16px;margin-bottom:10px;font-size:13px;
 }
 .sum-head{
-  font-family:'DM Mono',monospace;font-size:10px;
-  letter-spacing:1.5px;text-transform:uppercase;
-  color:var(--text3);margin-bottom:8px;
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--text4);margin-bottom:9px;
 }
 .sum-item{
   display:flex;align-items:flex-start;gap:8px;
   color:var(--text2);padding:3px 0;line-height:1.55;
 }
-.sum-bullet{color:var(--blue);font-size:12px;margin-top:1px}
+.sum-bullet{color:var(--accent);font-size:12px;margin-top:1px}
 
-/* FEATURES */
+/* ── SECTION LABEL ── */
+.sec-label{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);
+  margin-bottom:14px;display:flex;align-items:center;gap:10px;
+}
+.sec-label::before{content:'';width:14px;height:1px;background:var(--accent)}
+.sec-h{
+  font-size:clamp(30px,4vw,48px);font-weight:800;
+  letter-spacing:-2px;color:var(--text);
+  line-height:1.05;max-width:580px;margin-bottom:56px;
+}
+
+/* ── FEATURES BENTO ── */
 #features{
   position:relative;z-index:1;
-  padding:110px 48px;max-width:1160px;margin:0 auto;
+  padding:120px 48px;max-width:1200px;margin:0 auto;
 }
-.sec-label{
-  font-family:'DM Mono',monospace;font-size:11px;
-  letter-spacing:2px;text-transform:uppercase;color:var(--blue);
-  margin-bottom:12px;display:flex;align-items:center;gap:10px;
-}
-.sec-label::before{content:'';width:14px;height:1px;background:var(--blue)}
-.sec-h{
-  font-size:clamp(32px,4vw,50px);font-weight:700;
-  letter-spacing:-1.8px;color:var(--text);
-  line-height:1.05;max-width:600px;margin-bottom:56px;
-}
-
 .feat-grid{
   display:grid;
   grid-template-columns:repeat(12,1fr);
-  gap:1px;
-  background:var(--line);
-  border:1px solid var(--line2);
-  border-radius:var(--r2);
+  gap:2px;
+  background:var(--border);
+  border:1px solid var(--border2);
+  border-radius:var(--r3);
   overflow:hidden;
 }
 .fc{
@@ -546,67 +574,66 @@ h1 .grad{
 .fc:hover{background:var(--bg2)}
 .fc::before{
   content:'';position:absolute;inset:0;
-  background:radial-gradient(600px circle at var(--mx,50%) var(--my,50%),rgba(91,159,255,0.05),transparent 40%);
+  background:radial-gradient(500px circle at var(--mx,50%) var(--my,50%),rgba(124,107,255,0.07),transparent 40%);
   opacity:0;transition:opacity .3s;
 }
 .fc:hover::before{opacity:1}
-.f7{grid-column:span 7}
-.f5{grid-column:span 5}
-.f6{grid-column:span 6}
-.f4{grid-column:span 4}
-.f8{grid-column:span 8}
-.f12{grid-column:span 12}
+.f7{grid-column:span 7}.f5{grid-column:span 5}
+.f6{grid-column:span 6}.f4{grid-column:span 4}
+.f8{grid-column:span 8}.f12{grid-column:span 12}
 
 .fc-icon{
-  font-size:26px;margin-bottom:18px;
+  width:48px;height:48px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(124,107,255,0.2) 0%,rgba(167,139,250,0.1) 100%);
+  border:1px solid rgba(124,107,255,0.2);
   display:flex;align-items:center;justify-content:center;
-  width:48px;height:48px;
-  background:var(--blue-d);
-  border:1px solid rgba(91,159,255,0.18);
-  border-radius:var(--r);
+  font-size:22px;margin-bottom:20px;
+  box-shadow:0 4px 16px rgba(124,107,255,0.15);
 }
 .fc-title{
   font-size:21px;font-weight:700;color:var(--text);
   letter-spacing:-.5px;margin-bottom:10px;line-height:1.2;
 }
 .fc-desc{
-  font-size:15px;color:var(--text2);
-  line-height:1.72;font-weight:300;max-width:360px;
+  font-size:14px;color:var(--text2);
+  line-height:1.75;font-weight:400;max-width:360px;
 }
 
-/* feature inset demo cards */
+/* feature demo insets */
 .demo{
-  margin-top:28px;background:var(--bg);
-  border:1px solid var(--line2);border-radius:var(--r);
+  margin-top:24px;background:var(--bg);
+  border:1px solid var(--border2);border-radius:var(--r);
   overflow:hidden;font-size:13px;
 }
 .demo-bar{
   display:flex;align-items:center;gap:6px;
-  padding:9px 14px;background:var(--bg2);
-  border-bottom:1px solid var(--line);
+  padding:9px 14px;background:var(--bg1);
+  border-bottom:1px solid var(--border);
 }
 .demo-title{
-  margin:0 auto;font-family:'DM Mono',monospace;
-  font-size:10px;color:var(--text3);letter-spacing:.5px;
+  margin:0 auto;font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--text4);letter-spacing:.5px;
 }
 .demo-body{padding:16px 18px;line-height:1.8}
 .d-row{color:var(--text2);margin-bottom:2px}
-.d-hi{color:var(--text);font-weight:500}
-.d-muted{color:var(--text3)}
-.d-green{color:var(--green)}
-.d-blue{color:var(--blue)}
+.d-hi{color:var(--text);font-weight:600}
+.d-muted{color:var(--text4)}
+.d-accent{color:var(--accent3)}
+.d-green{color:var(--success)}
 
-/* big number */
+/* big stat */
 .big-n{
-  font-family:'DM Mono',monospace;
+  font-family:'JetBrains Mono',monospace;
   font-size:72px;font-weight:500;
-  color:var(--blue);letter-spacing:-4px;
-  line-height:1;margin-top:20px;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:-4px;line-height:1;margin-top:24px;
 }
 .big-n-sub{
-  font-family:'DM Mono',monospace;
-  font-size:12px;color:var(--text3);
-  letter-spacing:1px;text-transform:uppercase;margin-top:6px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--text4);
+  letter-spacing:1.5px;text-transform:uppercase;margin-top:7px;
 }
 .mini-bars{
   display:flex;align-items:flex-end;gap:5px;
@@ -614,129 +641,152 @@ h1 .grad{
 }
 .mb{
   flex:1;border-radius:3px 3px 0 0;
-  background:var(--blue-d);border-top:1px solid var(--blue);
+  background:linear-gradient(180deg,rgba(124,107,255,0.4) 0%,rgba(124,107,255,0.1) 100%);
+  border-top:1px solid rgba(124,107,255,0.5);
 }
 
-/* HOW IT WORKS */
+/* Waveform inside feature card */
+.wave-row{
+  display:flex;align-items:flex-end;gap:3px;
+  height:52px;justify-content:center;margin:20px 0;
+}
+.wb{
+  width:5px;border-radius:3px 3px 0 0;
+  background:linear-gradient(180deg,var(--accent) 0%,var(--accent2) 100%);
+  opacity:.7;animation:wv 1.2s ease-in-out infinite;
+}
+@keyframes wv{0%,100%{transform:scaleY(.15)}50%{transform:scaleY(1)}}
+
+/* ── HOW IT WORKS ── */
 #how{
   position:relative;z-index:1;
-  background:var(--bg1);border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
-  padding:110px 48px;
+  background:rgba(10,13,22,0.5);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:120px 48px;
 }
 .how-inner{
-  max-width:1160px;margin:0 auto;
+  max-width:1200px;margin:0 auto;
   display:grid;grid-template-columns:1fr 1fr;
   gap:80px;align-items:start;
 }
 .steps{margin-top:48px}
 .step{
-  display:flex;gap:22px;padding:26px 0;
-  border-bottom:1px solid var(--line);
-  cursor:pointer;
+  display:flex;gap:22px;padding:24px 0;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;transition:padding .2s;
 }
 .step:last-child{border-bottom:none}
+.step:hover{padding-left:4px}
 .step-n{
-  font-family:'DM Mono',monospace;font-size:12px;
-  color:var(--text3);padding-top:2px;
-  flex-shrink:0;width:24px;
-  transition:color .2s;
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  color:var(--text4);padding-top:3px;
+  flex-shrink:0;width:24px;transition:color .2s;
 }
-.step.on .step-n{color:var(--blue)}
+.step.on .step-n{color:var(--accent)}
 .step-title{
-  font-size:19px;font-weight:600;
-  color:var(--text2);letter-spacing:-.3px;
+  font-size:18px;font-weight:700;
+  color:var(--text3);letter-spacing:-.3px;
   margin-bottom:0;transition:color .2s;
 }
 .step.on .step-title{color:var(--text)}
 .step-desc{
-  font-size:14px;color:var(--text3);line-height:1.7;
-  font-weight:300;max-height:0;overflow:hidden;
-  transition:max-height .4s ease,opacity .3s,margin .3s;
+  font-size:14px;color:var(--text4);line-height:1.7;
+  font-weight:400;max-height:0;overflow:hidden;
+  transition:max-height .4s var(--ease),opacity .3s,margin .3s;
   opacity:0;
 }
-.step.on .step-desc{max-height:100px;opacity:1;color:var(--text2);margin-top:8px}
+.step.on .step-desc{max-height:120px;opacity:1;color:var(--text2);margin-top:9px}
 
 .how-visual{
-  position:sticky;top:88px;
-  background:var(--bg);border:1px solid var(--line2);
+  position:sticky;top:90px;
+  background:rgba(14,18,32,0.8);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border2);
   border-radius:var(--r3);padding:28px;min-height:360px;
   display:flex;align-items:center;
+  box-shadow:0 16px 48px rgba(0,0,0,0.4);
 }
-.vis{display:none;width:100%;animation:fin .35s ease}
+.how-visual::before{
+  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);
+}
+.vis{display:none;width:100%;animation:fin .35s var(--ease)}
 .vis.on{display:block}
-@keyframes fin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* record visual */
-.wave-row{
-  display:flex;align-items:flex-end;gap:3px;
-  height:56px;justify-content:center;
-  margin:18px 0;
-}
-.wb{
-  width:5px;border-radius:3px 3px 0 0;
-  background:var(--blue);opacity:.6;
-  animation:wv 1.2s ease-in-out infinite;
-}
-@keyframes wv{0%,100%{transform:scaleY(.2)}50%{transform:scaleY(1)}}
-
-/* CTA */
+/* ── CTA ── */
 #cta{
   position:relative;z-index:1;
-  text-align:center;padding:130px 48px;
-  overflow:hidden;
+  text-align:center;padding:140px 48px;overflow:hidden;
 }
 #cta::before{
   content:'';position:absolute;top:50%;left:50%;
   transform:translate(-50%,-50%);
-  width:700px;height:500px;
-  background:radial-gradient(ellipse,rgba(91,159,255,0.07) 0%,transparent 65%);
+  width:800px;height:600px;
+  background:radial-gradient(ellipse,rgba(124,107,255,0.1) 0%,transparent 65%);
   pointer-events:none;
 }
 .cta-h{
-  font-size:clamp(44px,7vw,84px);font-weight:700;
+  font-size:clamp(40px,7vw,84px);font-weight:800;
   letter-spacing:-3px;color:var(--text);line-height:1.0;
-  margin-bottom:22px;
+  margin-bottom:24px;
 }
 .cta-h .grad{
-  background:linear-gradient(100deg,var(--blue),var(--cyan));
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 50%,#818cf8 100%);
   -webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 .cta-sub{
-  font-size:18px;color:var(--text2);font-weight:300;
-  max-width:440px;margin:0 auto 44px;line-height:1.75;
+  font-size:18px;color:var(--text2);font-weight:400;
+  max-width:460px;margin:0 auto 48px;line-height:1.75;
 }
 
-/* FOOTER */
+/* ── FOOTER ── */
 footer{
   position:relative;z-index:1;
-  border-top:1px solid var(--line);
+  border-top:1px solid var(--border);
   padding:32px 48px;
   display:flex;align-items:center;justify-content:space-between;
 }
 .foot-logo{
-  font-family:'DM Mono',monospace;font-size:14px;
-  color:var(--text2);text-decoration:none;
+  font-size:14px;font-weight:700;color:var(--text3);
+  text-decoration:none;letter-spacing:-.2px;
 }
 .foot-links{display:flex;gap:24px;list-style:none}
 .foot-links a{
-  color:var(--text3);font-size:13px;
+  color:var(--text4);font-size:13px;
   text-decoration:none;transition:color .2s;
 }
-.foot-links a:hover{color:var(--text2)}
-.foot-copy{font-size:12px;color:var(--text3)}
+.foot-links a:hover{color:var(--text3)}
+.foot-copy{font-size:12px;color:var(--text4)}
 
-/* REVEAL */
-.rv{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+/* ── Scroll reveal ── */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
 .rv.in{opacity:1;transform:none}
 
-/* ANIMS */
-@keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+/* ── Keyframes ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 
+/* ── Scrollbar ── */
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px}
+::-webkit-scrollbar-thumb{background:rgba(124,107,255,0.3);border-radius:2px}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  nav{padding:0 20px}
+  .nav-mid{display:none}
+  h1{letter-spacing:-2px}
+  #features{padding:80px 20px}
+  .feat-grid{grid-template-columns:1fr}
+  .f7,.f5,.f6,.f4,.f8,.f12{grid-column:span 1}
+  .how-inner{grid-template-columns:1fr;gap:40px}
+  .how-visual{position:relative;top:0}
+  #how{padding:80px 20px}
+  footer{flex-direction:column;gap:16px;text-align:center;padding:32px 20px}
+  .pillars{flex-direction:column}
+}
 </style>
 </head>
 <body>
@@ -746,52 +796,50 @@ footer{
 <!-- NAV -->
 <nav>
   <a class="logo" href="#">
-    <div class="logo-icon">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <rect x=".5" y=".5" width="5.5" height="5.5" rx="1.2" stroke="#5b9fff" stroke-width="1"/>
-        <rect x="8" y=".5" width="5.5" height="5.5" rx="1.2" stroke="#5b9fff" stroke-width="1" opacity=".5"/>
-        <rect x=".5" y="8" width="5.5" height="5.5" rx="1.2" stroke="#5b9fff" stroke-width="1" opacity=".5"/>
-        <rect x="8" y="8" width="5.5" height="5.5" rx="1.2" stroke="#5b9fff" stroke-width="1" opacity=".25"/>
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"/>
+        <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
       </svg>
     </div>
-    scribe
+    <span class="logo-text">Scribe</span>
   </a>
   <ul class="nav-mid">
     <li><a href="#features">Features</a></li>
     <li><a href="#how">How it works</a></li>
     <li><a href="https://github.com/Shubh-Pandey99/scribe" target="_blank">GitHub</a></li>
   </ul>
-  <div class="nav-pill">
-    <span class="nav-pill-dot"></span>
-    Scribe Core
+  <div class="nav-badge">
+    <span class="nav-badge-dot"></span>
+    Live
   </div>
 </nav>
 
 <!-- HERO -->
 <section id="hero">
   <div class="hero-glow"></div>
-  <div class="hero-line"></div>
 
   <div class="eyebrow">
     <span class="eyebrow-line"></span>
-    AI Meeting Companion
+    Stealth AI Assistant
     <span class="eyebrow-line r"></span>
   </div>
 
   <h1>
-    Stop taking notes.<br>
-    <span class="grad">Start being present.</span>
+    Your secret weapon<br>
+    <span class="grad">for every meeting.</span>
   </h1>
 
   <p class="hero-sub">
-    Scribe listens to any conversation, captures every word in real time, and turns it into summaries and answers — so you never have to type a single thing.
+    Scribe listens live, transcribes in real-time, and answers your questions — silently running in your browser sidepanel. No one knows it&apos;s there.
   </p>
 
   <div class="cta-row">
-    <a href="https://github.com/Shubh-Pandey99/scribe" target="_blank" class="btn-p">
-      Add to Chrome — it's free
+    <a href="https://github.com/Shubh-Pandey99/scribe" target="_blank" class="btn-primary">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+      Add to Chrome — free
     </a>
-    <a href="#how" class="btn-s">
+    <a href="#how" class="btn-secondary">
       See how it works
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
@@ -802,17 +850,17 @@ footer{
     <div class="pillar">
       <div class="pillar-icon">🎙</div>
       <div class="pillar-title">Capture</div>
-      <div class="pillar-desc">Every word, live — as the conversation happens</div>
+      <div class="pillar-desc">Every word, live — tab audio or mic</div>
     </div>
     <div class="pillar">
       <div class="pillar-icon">✨</div>
-      <div class="pillar-title">Summarise</div>
-      <div class="pillar-desc">Decisions and action items, in one click</div>
+      <div class="pillar-title">Analyse</div>
+      <div class="pillar-desc">Summaries, screenshots, AI answers</div>
     </div>
     <div class="pillar">
-      <div class="pillar-icon">💬</div>
-      <div class="pillar-title">Ask</div>
-      <div class="pillar-desc">Question your own meetings, get instant answers</div>
+      <div class="pillar-icon">👁</div>
+      <div class="pillar-title">Stealth</div>
+      <div class="pillar-desc">Invisible until you need it</div>
     </div>
   </div>
 
@@ -821,32 +869,32 @@ footer{
     <div class="mock">
       <div class="mock-bar">
         <div class="mdot r"></div><div class="mdot y"></div><div class="mdot g"></div>
-        <span class="mock-title">Scribe — Team Standup · 09:30</span>
+        <span class="mock-title">Scribe — Interview · Live</span>
       </div>
       <div class="mock-body">
-        <!-- Transcript -->
+        <!-- Transcript pane -->
         <div class="mock-pane">
           <div class="mock-label">
             <span class="mock-label-dot"></span>
             Listening now
           </div>
-          <div class="transcript-line"><span class="who">Priya</span>I finished the auth flow yesterday, it's ready for review.</div>
-          <div class="transcript-line"><span class="who">James</span>Great — I'll pick that up this morning. Also the staging deploy is blocked on the env vars.</div>
-          <div class="transcript-line"><span class="who">Priya</span>I can sort those today. Should be done before lunch.<span class="tcursor"></span></div>
+          <div class="transcript-line"><span class="who">Q</span>Tell me about a time you had to optimise a slow query in production.</div>
+          <div class="transcript-line"><span class="who">You</span>Sure — at my last role we had a JOIN across three tables hitting 4 seconds on mobile.<span class="tcursor"></span></div>
         </div>
         <div class="mock-div"></div>
-        <!-- Summary -->
+        <!-- AI pane -->
         <div class="mock-pane">
-          <div class="mock-label">AI Summary</div>
+          <div class="mock-label">AI Answer</div>
           <div class="summary-card">
-            <div class="sum-head">Decisions</div>
-            <div class="sum-item"><span class="sum-bullet">›</span>Auth flow approved — ready for review</div>
-            <div class="sum-item"><span class="sum-bullet">›</span>Staging deploy unblocked after env vars fixed</div>
+            <div class="sum-head">Key points to cover</div>
+            <div class="sum-item"><span class="sum-bullet">›</span>Identify the bottleneck (EXPLAIN ANALYZE)</div>
+            <div class="sum-item"><span class="sum-bullet">›</span>Add composite index on join columns</div>
+            <div class="sum-item"><span class="sum-bullet">›</span>Result: 4s → 120ms (33× improvement)</div>
           </div>
           <div class="summary-card">
-            <div class="sum-head">Action items</div>
-            <div class="sum-item"><span class="sum-bullet">›</span>James → review auth PR this morning</div>
-            <div class="sum-item"><span class="sum-bullet">›</span>Priya → fix env vars before lunch</div>
+            <div class="sum-head">Follow-up answers ready</div>
+            <div class="sum-item"><span class="sum-bullet">›</span>Index type chosen and why</div>
+            <div class="sum-item"><span class="sum-bullet">›</span>Impact on write performance</div>
           </div>
         </div>
       </div>
@@ -857,7 +905,7 @@ footer{
 <!-- FEATURES -->
 <section id="features">
   <div class="sec-label rv">What Scribe does</div>
-  <h2 class="sec-h rv">Everything you need.<br>Nothing you don't.</h2>
+  <h2 class="sec-h rv">Everything you need.<br>Nothing you don&apos;t.</h2>
 
   <div class="feat-grid rv">
 
@@ -866,16 +914,31 @@ footer{
       <div class="fc-icon">🎙</div>
       <div class="fc-title">Hear every word.</div>
       <div class="fc-desc">
-        Open Scribe, hit record, and talk. It listens to your mic or any browser tab — Zoom, Google Meet, Teams, podcasts, lectures — and shows you a live transcript as you speak.
+        Open Scribe, hit record, and talk. It listens to your mic or any browser tab — Zoom, Google Meet, Teams, video calls — and shows you a live transcript as you speak.
+      </div>
+      <div class="demo" style="margin-top:24px">
+        <div class="demo-bar">
+          <div class="mdot r"></div><div class="mdot y"></div><div class="mdot g"></div>
+          <span class="demo-title">Live Transcript</span>
+        </div>
+        <div class="demo-body">
+          <div class="d-row"><span class="d-accent">Q</span> &nbsp;Walk me through your system design experience.</div>
+          <div class="d-row"><span class="d-accent">You</span> &nbsp;I&apos;ve designed distributed systems at scale including...<span class="tcursor"></span></div>
+        </div>
       </div>
     </div>
 
     <!-- 2: Stealth -->
     <div class="fc f5">
       <div class="fc-icon">👁</div>
-      <div class="fc-title">Stay focused.</div>
+      <div class="fc-title">Stay invisible.</div>
       <div class="fc-desc">
-        Toggle stealth mode and Scribe fades into the background — invisible until you need it, never distracting from the conversation in front of you.
+        One click activates stealth mode — the panel fades and blurs. Hover to reveal. No one on your call ever sees it. Your secret co-pilot.
+      </div>
+      <div style="margin-top:24px;padding:20px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--r);text-align:center">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text4);letter-spacing:1.5px;margin-bottom:12px">STEALTH MODE</div>
+        <div style="filter:blur(4px);opacity:0.4;font-size:13px;color:var(--text2);line-height:1.7">The answer is to use a Redis-based<br>rate limiter with token bucket...</div>
+        <div style="margin-top:10px;font-size:11px;color:var(--accent3)">← hover to reveal</div>
       </div>
     </div>
 
@@ -883,8 +946,9 @@ footer{
     <div class="fc f4">
       <div class="fc-icon">⚡</div>
       <div class="fc-title">Instant.</div>
-      <div class="fc-desc">Answers appear in seconds. You're never left waiting while the conversation moves on.</div>
-      <div class="big-n">&lt;3<span style="font-size:.4em;color:var(--text2)">s</span></div>
+      <div class="fc-desc">Answers in under 3 seconds. You&apos;re never left waiting while the interviewer moves on.</div>
+      <div class="big-n">&lt;3<span style="font-size:.4em;-webkit-text-fill-color:var(--text3)">s</span></div>
+      <div class="big-n-sub">avg response time</div>
     </div>
 
     <!-- 4: Ask anything -->
@@ -892,16 +956,27 @@ footer{
       <div class="fc-icon">💬</div>
       <div class="fc-title">Ask anything about what was said.</div>
       <div class="fc-desc">
-        Missed something? Ask Scribe. "What did we decide about the launch date?" "Who's handling the design?" It searches through everything it heard and gives you a straight answer.
+        Missed something? Ask Scribe. &ldquo;What was the follow-up question?&rdquo; &ldquo;Who&apos;s handling the design?&rdquo; It reads everything it heard and gives you a direct answer instantly.
+      </div>
+      <div class="demo" style="margin-top:20px">
+        <div class="demo-bar">
+          <div class="mdot r"></div><div class="mdot y"></div><div class="mdot g"></div>
+          <span class="demo-title">Ask Scribe</span>
+        </div>
+        <div class="demo-body">
+          <div class="d-row d-muted">Ask anything about this meeting...</div>
+          <div class="d-row" style="margin-top:8px"><span class="d-accent">You:</span> What system design patterns should I mention?</div>
+          <div class="d-row"><span style="color:var(--accent3)">Scribe:</span> <span class="d-hi">CQRS, Event Sourcing, Saga pattern</span> — all relevant here</div>
+        </div>
       </div>
     </div>
 
     <!-- 5: Screen snap -->
     <div class="fc f6">
       <div class="fc-icon">📷</div>
-      <div class="fc-title">See what's on screen too.</div>
+      <div class="fc-title">See what&apos;s on screen too.</div>
       <div class="fc-desc">
-        Sharing slides or a document? Screenshot it and paste it in. Scribe reads the image alongside your conversation and gives context-aware answers about what's being presented.
+        Sharing a coding challenge or diagram? Screenshot it and paste. Scribe reads the image alongside your conversation and gives context-aware answers about what&apos;s shown.
       </div>
     </div>
 
@@ -910,7 +985,7 @@ footer{
       <div class="fc-icon">🗂</div>
       <div class="fc-title">Every session, saved.</div>
       <div class="fc-desc">
-        All your meetings are saved locally and synced to the cloud. Go back to any session, re-read the transcript, get a fresh summary, or ask new questions about old conversations.
+        All your sessions are saved locally and synced to the cloud. Go back to any interview, re-read the transcript, get a fresh summary, or ask new questions about old conversations.
       </div>
     </div>
 
@@ -922,27 +997,27 @@ footer{
   <div class="how-inner">
     <div>
       <div class="sec-label rv">How it works</div>
-      <h2 class="sec-h rv" style="margin-bottom:0">Three steps.<br>That's it.</h2>
+      <h2 class="sec-h rv" style="margin-bottom:0">Three steps.<br>That&apos;s it.</h2>
       <div class="steps rv">
         <div class="step on" data-v="0">
           <div class="step-n">01</div>
           <div>
             <div class="step-title">Add Scribe to Chrome</div>
-            <div class="step-desc">Install the extension for free. Open the sidebar on any tab. Paste in your API URL — takes about 60 seconds.</div>
+            <div class="step-desc">Clone the repo and load it as an unpacked extension. Open the sidebar on any tab and paste your API URL — takes about 60 seconds total.</div>
           </div>
         </div>
         <div class="step" data-v="1">
           <div class="step-n">02</div>
           <div>
             <div class="step-title">Hit record on any call</div>
-            <div class="step-desc">Start a Zoom, Meet, or any audio tab and hit Record. Scribe starts listening immediately — transcript appears live as people speak.</div>
+            <div class="step-desc">Start a Zoom, Meet, or any audio tab and press Record. Scribe starts listening immediately — the transcript appears live as people speak.</div>
           </div>
         </div>
         <div class="step" data-v="2">
           <div class="step-n">03</div>
           <div>
-            <div class="step-title">Get your notes instantly</div>
-            <div class="step-desc">When the call ends, hit Summarise. Decisions and action items appear in seconds. Or ask any question and get a direct answer from the transcript.</div>
+            <div class="step-title">Get answers instantly</div>
+            <div class="step-desc">Ask questions via the command bar or hit Summarise. AI answers appear in under 3 seconds, formatted and scannable while you&apos;re speaking.</div>
           </div>
         </div>
       </div>
@@ -951,12 +1026,16 @@ footer{
     <div class="how-visual rv">
       <!-- Visual 0: setup -->
       <div class="vis on" id="v0">
-        <div style="font-family:'DM Mono',monospace;font-size:12px">
-          <div style="color:var(--text3);margin-bottom:16px;letter-spacing:.5px">⚙ Setup — takes 60 seconds</div>
-          <div style="background:var(--bg1);border:1px solid var(--line2);border-radius:var(--r);overflow:hidden">
-            <div style="padding:28px">
-              <div style="font-size:13px;margin-bottom:18px;color:var(--text2)">1. Install the Chrome extension</div>
-              <div style="background:var(--blue);color:#000;text-align:center;padding:11px;border-radius:8px;font-weight:600">Save &amp; connect</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;width:100%">
+          <div style="color:var(--text4);margin-bottom:18px;letter-spacing:.5px">⚙ Setup — 60 seconds</div>
+          <div style="background:var(--bg1);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden">
+            <div style="padding:14px 18px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text4)">Settings</div>
+            <div style="padding:20px 18px;display:flex;flex-direction:column;gap:14px">
+              <div>
+                <div style="font-size:10px;color:var(--text4);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">API URL</div>
+                <div style="background:var(--bg);border:1px solid var(--border-accent);border-radius:8px;padding:9px 12px;color:var(--accent3);font-size:12px">https://scribe-extension.vercel.app</div>
+              </div>
+              <div style="background:linear-gradient(135deg,var(--accent) 0%,#6366f1 100%);color:white;text-align:center;padding:11px;border-radius:8px;font-weight:700;font-size:13px;box-shadow:0 4px 14px rgba(124,107,255,0.4)">Save &amp; Connect ✓</div>
             </div>
           </div>
         </div>
@@ -965,25 +1044,36 @@ footer{
       <!-- Visual 1: recording -->
       <div class="vis" id="v1">
         <div style="width:100%">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-family:'DM Mono',monospace;font-size:12px">
-            <span style="color:var(--text3);letter-spacing:1px;text-transform:uppercase">Recording</span>
-            <span style="color:var(--green);display:flex;align-items:center;gap:6px;font-size:11px">Live</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text4);letter-spacing:1px;text-transform:uppercase">Recording</div>
+            <div style="color:var(--danger);display:flex;align-items:center;gap:6px;font-size:11px;font-family:'JetBrains Mono',monospace">
+              <span style="width:6px;height:6px;border-radius:50%;background:var(--danger);display:inline-block;animation:pulseDot 1.4s infinite"></span>
+              Live
+            </div>
           </div>
-          <div style="background:var(--bg1);border:1px solid var(--line2);border-radius:var(--r);padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.8;margin-top:4px">
-            "Let's wrap up — the launch is confirmed for the 18th, and Tom will send the final brief before end of day."<span class="tcursor"></span>
+          <div style="display:flex;justify-content:center;gap:3px;height:48px;align-items:flex-end;margin-bottom:16px">
+            <div class="wb" style="animation-delay:0s"></div>
+            <div class="wb" style="animation-delay:.12s"></div>
+            <div class="wb" style="animation-delay:.24s"></div>
+            <div class="wb" style="animation-delay:.12s"></div>
+            <div class="wb" style="animation-delay:0s"></div>
+          </div>
+          <div style="background:var(--bg1);border:1px solid var(--border2);border-radius:var(--r);padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.8">
+            &ldquo;Let&apos;s confirm — the system needs to handle 10k RPS at P99 under 100ms.&rdquo;<span class="tcursor"></span>
           </div>
         </div>
       </div>
 
-      <!-- Visual 2: summary -->
+      <!-- Visual 2: answer -->
       <div class="vis" id="v2">
         <div style="width:100%;font-size:13px">
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px">Meeting summary</div>
-          <div style="background:var(--bg1);border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
-            <div style="padding:14px 16px;border-bottom:1px solid var(--line);font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase">Decisions</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text4);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px">AI Answer</div>
+          <div style="background:var(--bg1);border:1px solid var(--border2);border-radius:var(--r);margin-bottom:10px">
+            <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text4);letter-spacing:1.5px;text-transform:uppercase">Architecture to mention</div>
             <div style="padding:14px 16px">
-              <div style="color:var(--text2);margin-bottom:6px">› Launch confirmed for 18th</div>
-              <div style="color:var(--text2)">› Tom sends brief before EOD</div>
+              <div style="color:var(--text2);margin-bottom:6px">› <span style="color:var(--text);font-weight:600">Read replicas</span> + connection pooling (PgBouncer)</div>
+              <div style="color:var(--text2);margin-bottom:6px">› <span style="color:var(--text);font-weight:600">Redis cache</span> for hot paths (TTL: 5min)</div>
+              <div style="color:var(--text2)">› <span style="color:var(--text);font-weight:600">CDN edge</span> for static + API gateway rate limiting</div>
             </div>
           </div>
         </div>
@@ -995,23 +1085,27 @@ footer{
 <!-- CTA -->
 <section id="cta">
   <h2 class="cta-h rv">
-    Your next meeting,<br>
-    <span class="grad">fully remembered.</span>
+    Your next interview,<br>
+    <span class="grad">fully prepared.</span>
   </h2>
+  <p class="cta-sub rv">Free, open source, and running in your browser. No data leaves your machine unless you choose it.</p>
   <div class="cta-row rv">
-    <a href="https://github.com/Shubh-Pandey99/scribe" target="_blank" class="btn-p" style="font-size:16px;padding:16px 36px">
-      Get Scribe — free on GitHub
+    <a href="https://github.com/Shubh-Pandey99/scribe" target="_blank" class="btn-primary" style="font-size:16px;padding:16px 36px">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+      Get Scribe on GitHub
     </a>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <a class="foot-logo" href="#">scribe</a>
+  <a class="foot-logo" href="#">Scribe</a>
   <ul class="foot-links">
     <li><a href="https://github.com/Shubh-Pandey99/scribe" target="_blank">GitHub</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
   </ul>
-  <div class="foot-copy">MIT License · Scribe Intelligence</div>
+  <div class="foot-copy">MIT License &middot; Open Source</div>
 </footer>
 
 <script>
@@ -1031,10 +1125,19 @@ const obs=new IntersectionObserver(es=>{
   es.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)} })
 },{threshold:.08,rootMargin:'0px 0px -30px 0px'})
 document.querySelectorAll('.rv').forEach(el=>obs.observe(el))
+
+// Feature card mouse glow
+document.querySelectorAll('.fc').forEach(fc=>{
+  fc.addEventListener('mousemove',e=>{
+    const r=fc.getBoundingClientRect()
+    fc.style.setProperty('--mx',(e.clientX-r.left)+'px')
+    fc.style.setProperty('--my',(e.clientY-r.top)+'px')
+  })
+})
 </script>
 </body>
 </html>
-    """, 200, {"Content-Type": "text/html"}
+""", 200, {"Content-Type": "text/html"}
 
 @app.get("/health")
 def health(): return jsonify({"status":"ok", "db_error": db_error}), 200
