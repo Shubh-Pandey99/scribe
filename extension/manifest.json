@@ -4,7 +4,7 @@
   "version": "2.2.0",
   "description": "AI-powered live transcription, screen capture analysis, and real-time Q&A — right in your browser sidepanel.",
   "background": {
-    "service_worker": "background-enhanced.js"
+    "service_worker": "background.js"
   },
   "permissions": [
     "storage",
@@ -20,14 +20,14 @@
     "https://*.vercel.app/*"
   ],
   "icons": {
-    "128": "icon.png"
+    "128": "icons/icon-128.png"
   },
   "action": {
-    "default_icon": "icon.png",
+    "default_icon": "icons/icon-128.png",
     "default_title": "Open Scribe"
   },
   "side_panel": {
-    "default_path": "sidepanel.html"
+    "default_path": "sidepanel/sidepanel.html"
   },
   "content_scripts": [
     {
@@ -37,7 +37,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["icon.png"],
+      "resources": ["icons/icon-128.png"],
       "matches": ["<all_urls>"]
     }
   ]

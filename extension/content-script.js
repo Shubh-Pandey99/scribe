@@ -19,7 +19,7 @@ function showNotification(title, body) {
   if (Notification.permission === 'granted') {
     new Notification(title, {
       body,
-      icon: chrome.runtime.getURL('icon.png'),
+      icon: chrome.runtime.getURL('icons/icon-128.png'),
     });
   }
 }
